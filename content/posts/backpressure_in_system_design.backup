@@ -1,0 +1,61 @@
+---
+title: "Backpressure in System Design: Kafka Pipeline at Scale"
+tags: ["system-design","kafka","reliability","backpressure","idempotency"]
+summary: "Thiết kế pipeline Kafka chịu tải cao mà không nghẽn: chiến lược backpressure, retry, DLQ và idempotency thực chiến."
+series: ["Realtime Matching Orchestrator"]
+draft: false
+mermaid: true
+---
+
+## 1) Bài toán & mục tiêu
+- **SLA**: P95 < 500ms end-to-end, **SLO**: 99.9% success.
+- **Load**: 50k msgs/s, burst x3.
+- **Mục tiêu**: không nghẽn, không mất dữ liệu, retry có kiểm soát.
+
+## 2) Kiến trúc tổng quát
+- Producer → Kafka topics (partition theo key) → Consumer groups
+- Orchestrator (worker pool) → DLQ, retry topic (exponential backoff)
+- Store idempotency keys (Redis/RocksDB) để đảm bảo **exactly-once-ish**
+
+## 3) Backpressure: các cách tiếp cận
+- **Consumer lag aware scaling** (HPA dựa trên lag)
+- **Semaphore / bounded queue** ở worker
+- **Adaptive batch size** (nhỏ khi latency tăng)
+- **Shed load** khi downstream quá tải (HTTP 429 + retry)
+
+## 4) Retry & DLQ chiến lược
+- **Exponential backoff** + jitter
+- **Categorize lỗi**: retryable vs non-retryable
+- **Poison message** → route DLQ kèm root-cause
+- **Visibility**: metric count per reason, alerting ngưỡng
+
+## 5) Idempotency: “exactly-once-ish”
+- Key = hash(payload) hoặc eventId
+- **Dedup cache** TTL ngắn (Redis/RocksDB Bloom filter)
+- At-least-once + idempotent sink = hành vi như exactly-once
+
+## 6) Quan sát & thử nghiệm
+- Metric: consumer lag, processing time, retry rate, DLQ rate
+- Trace: span cho từng hop, tag retryCount
+- **Load test**: burst 3×, thử hot partition, simulate downstream 5xx
+
+## 7) Checklist triển khai
+- [ ] Retry topic & DLQ riêng
+- [ ] Idempotency store + TTL
+- [ ] Alert: lag, retry spike, DLQ spike
+- [ ] Runbook: xóa poison, reprocess batch
+- [ ] Chaos test tháng/lần
+
+## 8) Bài học & khuyến nghị
+- Backpressure phải **hiển hiện** trong metric, không “ngầm”.
+- Retry không thay thế fix root cause; DLQ là cơ chế *cô lập*.
+- Idempotency rẻ hơn “exactly-once” thật—và đủ cho phần lớn hệ thống.
+
+> Next: mình sẽ viết về **Orchestration vs Choreography** cho matching @ scale, và cách nối kiến trúc này sang **AI inference pipeline**.
+
+```mermaid
+graph TD;
+    A[User Request] --> B{Load Balancer};
+    B -->|Path A| C[Service 1];
+    B -->|Path B| D[Service 2];
+```

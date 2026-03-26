@@ -1,0 +1,65 @@
+baseURL: "https://tuanhiep.github.io/tuanhiep.principal"
+title: "Tuan Hiep TRAN — System Design & AI Infra"
+languageCode: "en-us"
+theme: "PaperMod"
+pagination:
+  pagerSize: 10
+enableRobotsTXT: true
+enableGitInfo: true
+
+frontmatter:
+  date:
+    - date
+    - publishDate
+    - :git   # fallback → dùng ngày commit đầu tiên
+  lastmod:
+    - lastmod
+    - date
+    - publishDate
+    - :git        # <- ưu tiên ngày commit
+
+params:
+  defaultTheme: auto
+  showReadingTime: true
+  showToc: true
+  tocOpen: true
+  author: "Hiep"
+  homeInfoParams:
+    Title: "System Design & AI Infra"
+    Content: >
+      Notes from real-world distributed systems and AI infrastructure.
+  showLastMod: true              # <- bật hiển thị ngày update
+  # lastModFormat: "Jan 2, 2006" # (tuỳ chọn format ngày)
+  mermaid:
+    enable: true
+    theme: "default" # Các lựa chọn: default, dark, neutral, forest
+
+menu:
+  main:
+    - name: Posts
+      url: /posts/
+      weight: 1
+    - name: Tags
+      url: /tags/
+      weight: 2
+
+markup:
+  highlight:
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - - $$
+              - $$
+            - - \[
+              - \]
+          inline:
+            - - $
+              - $
+            - - \(
+              - \)
