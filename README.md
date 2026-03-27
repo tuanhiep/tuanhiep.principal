@@ -1,2 +1,3 @@
-# principal
-This repository is for my blog Principal Engineer
+# The Principal Craft
+
+Notes from real-world Principal Engineering and Software Architecture.
