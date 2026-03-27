@@ -1,6 +1,6 @@
 /* Dàn đều chữ cho phần nội dung bài viết */
 .post-content p {
-    text-align: justify;
+    text-align: left;
 
     /* 💠 Điểm Xoay Khí (Pivot Insight): Xử lý "Dòng sông trắng" */
     /* Khi dàn đều tiếng Anh, các từ dài có thể tạo ra khoảng trắng lớn giữa các từ.
