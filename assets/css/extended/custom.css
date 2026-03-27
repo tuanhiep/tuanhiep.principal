@@ -1,0 +1,11 @@
+/* Dàn đều chữ cho phần nội dung bài viết */
+.post-content p {
+    text-align: justify;
+
+    /* 💠 Điểm Xoay Khí (Pivot Insight): Xử lý "Dòng sông trắng" */
+    /* Khi dàn đều tiếng Anh, các từ dài có thể tạo ra khoảng trắng lớn giữa các từ.
+       Thuộc tính hyphens giúp hệ thống tự động thêm dấu gạch nối (-) để ngắt từ xuống dòng chuẩn xác. */
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
